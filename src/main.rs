@@ -21,15 +21,14 @@ fn main() {
     }
 }
 
-fn check(lines: &Vec<i32>, int_vec: &mut HashSet<i32>, last_total: &mut i32) -> () {
+fn check(lines: &[i32], int_vec: &mut HashSet<i32>, last_total: &mut i32) -> () {
     for line in lines {
-        let total_now = *last_total + line;
-        if int_vec.contains(&total_now) {
-            println!("Got seen-before-total! {}", &total_now);
+        *last_total += line;
+        if int_vec.contains(last_total) {
+            println!("Got seen-before-total! {}", last_total);
             std::process::exit(0);
         }
 
-        *last_total = total_now;
-        int_vec.insert(total_now);
+        int_vec.insert(*last_total);
     }
 }
