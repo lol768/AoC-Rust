@@ -1,37 +1,39 @@
 use std::io;
 use std::io::Read;
-use std::collections::HashSet;
 
 fn main() {
     let mut my_str = String::new();
     io::stdin().read_to_string(&mut my_str)
         .expect("Failed to read from stdin");
 
-    let lines: Vec<_> = my_str.split("\n").filter(|x: &&str| !x.is_empty())
-        .map(|x: &str| x.parse::<i32>().unwrap()).collect();
+    let lines: Vec<_> = my_str.split("\n").filter(|x: &&str| !x.is_empty()).collect();
 
+    println!("{}", checksum(&lines))
 
-    let mut int_vec: HashSet<i32> = HashSet::new();
-    int_vec.insert(0);
-    let mut last_total: i32 = 0;
-
-    for i in 0..1000 {
-        println!("{}", i);
-        if !check(&lines, &mut int_vec, &mut last_total) {
-            return
-        }
-    }
 }
 
-fn check(lines: &[i32], int_vec: &mut HashSet<i32>, last_total: &mut i32) -> bool {
-    for line in lines {
-        *last_total += line;
-        if int_vec.contains(last_total) {
-            println!("Got seen-before-total! {}", last_total);
-            return false
-        }
+fn checksum(lines: &Vec<&str>) -> usize {
+    // perf: could store get_counts_arr results and reuse
+    let c3 = lines.into_iter().filter(|l| is_exactly_thrice(*l)).count();
+    let c2 = lines.into_iter().filter(|l| is_exactly_twice(*l)).count();
+    c2*c3
+}
 
-        int_vec.insert(*last_total);
+fn is_exactly_twice(my_str: &str) -> bool {
+    let arr = get_counts_arr(my_str);
+    arr.iter().any(|e| *e == 2)
+}
+
+fn is_exactly_thrice(my_str: &str) -> bool {
+    let arr = get_counts_arr(my_str);
+    arr.iter().any(|e| *e == 3)
+}
+
+fn get_counts_arr(my_str: &str) -> [u32; 26] {
+    let mut arr: [u32; 26] = [0; 26];
+    for c in my_str.chars() {
+        let i = ((c as u32) - 97) as usize; // guaranteed ascii
+        arr[i] += 1;
     }
-    true
+    arr
 }
