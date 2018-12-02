@@ -13,20 +13,10 @@ fn main() {
 }
 
 fn checksum(lines: &Vec<&str>) -> usize {
-    // perf: could store get_counts_arr results and reuse
-    let c3 = lines.into_iter().filter(|l| is_exactly_thrice(*l)).count();
-    let c2 = lines.into_iter().filter(|l| is_exactly_twice(*l)).count();
-    c2*c3
-}
-
-fn is_exactly_twice(my_str: &str) -> bool {
-    let arr = get_counts_arr(my_str);
-    arr.iter().any(|e| *e == 2)
-}
-
-fn is_exactly_thrice(my_str: &str) -> bool {
-    let arr = get_counts_arr(my_str);
-    arr.iter().any(|e| *e == 3)
+    let arrays: Vec<_> = lines.into_iter().map(|l| get_counts_arr(l)).collect();
+    let a2 = (&arrays).into_iter().filter(|a| a.iter().any(|e| *e == 2)).count();
+    let a3 = (&arrays).into_iter().filter(|a| a.iter().any(|e| *e == 3)).count();
+    a2*a3
 }
 
 fn get_counts_arr(my_str: &str) -> [u32; 26] {
